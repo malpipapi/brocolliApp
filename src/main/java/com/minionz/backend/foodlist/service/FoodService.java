@@ -1,5 +1,8 @@
 package com.minionz.backend.foodlist.service;
 
+import com.minionz.backend.calendar.controller.dto.SumFoodRequestDto;
+import com.minionz.backend.calendar.domain.Calendar;
+import com.minionz.backend.calendar.domain.CalendarRepository;
 import com.minionz.backend.common.domain.Message;
 import com.minionz.backend.common.exception.NotFoundException;
 import com.minionz.backend.foodlist.controller.dto.*;
@@ -11,10 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -25,7 +25,7 @@ public class FoodService {
     private static final String Food_Save_SUCCESS_MESSAGE = "음식 저장 성공";
     private final FoodRepository foodRepository;
     private final FoodListRepository foodListRepository;
-
+    private final CalendarRepository calendarRepository;
 
     public FoodTotalResponseDto myfind(FoodRequestDto foodRequestDto) {
         String[] food_name = {foodRequestDto.getFood_Name1(), foodRequestDto.getFood_Name2(), foodRequestDto.getFood_Name3(), foodRequestDto.getFood_Name4(), foodRequestDto.getFood_Name5()};
@@ -35,21 +35,20 @@ public class FoodService {
         double foodJi = 0;
         double foodKcal=0;
         FoodList foodList = null;
-        List<FoodListResponseDto> foodListResponseDtoList = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             if (Objects.equals(food_name[i], "")){
                 continue;
             }
             foodList =foodListRepository.findFoodListByFoodListName(food_name[i])
                     .orElseThrow(() -> new NotFoundException(Food_Find_Fail_MESSAGE));
-
             foodTan += foodList.getFoodTan()*food_person[i];
             foodDan += foodList.getFoodDan()*food_person[i];
             foodJi += foodList.getFoodJi()*food_person[i];
             foodKcal += foodList.getFoodKcal()*food_person[i];
-
-            //foodListResponseDtoList.add(new FoodListResponseDto(foodList),);
         }
+        SumFoodRequestDto sumFoodRequestDto = new SumFoodRequestDto(foodTan,foodDan,foodJi,foodKcal,foodRequestDto.getFoodtime());
+        Calendar calendar = sumFoodRequestDto.toCalendar();
+        calendarRepository.save(calendar);
         return new FoodTotalResponseDto(foodKcal,foodTan,foodDan,foodJi, foodRequestDto.getFoodtime());
     }
 

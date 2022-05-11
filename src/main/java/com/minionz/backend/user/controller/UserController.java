@@ -20,7 +20,7 @@ public class UserController {
     private static final String LOGIN_SUCCESS_MESSAGE = "로그인 성공";
     private static final String VIEW_MY_PAGE_SUCCESS_MESSAGE = "마이페이지 조회 성공";
     private static final String VIEW_MY_BOOKMARK_SUCCESS_MESSAGE = "즐겨찾기 조회 성공";
-
+    private static final String CHANGE_MY_PAGE_SUCCESS_MESSAGE ="마이페이지 업데이트 성공";
     private final UserService userService;
 
     @PostMapping("/login")
@@ -59,7 +59,13 @@ public class UserController {
         log.info(VIEW_MY_PAGE_SUCCESS_MESSAGE);
         return userPageResponseDto;
     }
-
+    @PutMapping("/change/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Message changmyPage(@PathVariable("id") Long id,@RequestBody UserChangeRequestDto userChangeRequestDto ){
+        Message message = userService.change(id,userChangeRequestDto);
+        log.info(CHANGE_MY_PAGE_SUCCESS_MESSAGE);
+        return message;
+    }
 /*    @PostMapping("/bookmark")
     @ResponseStatus(HttpStatus.OK)
     public Message addBookmark(@RequestBody BookmarkRequestDto bookmarkRequestDto) {

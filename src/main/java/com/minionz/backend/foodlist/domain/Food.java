@@ -16,10 +16,6 @@ import java.util.List;
 @Entity
 public class Food extends BaseEntity {
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "food_id")
-//    private Food food;
-
     @Column
     private String food_Name1;
 

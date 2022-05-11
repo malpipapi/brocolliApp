@@ -6,6 +6,7 @@ import com.minionz.backend.common.exception.NotEqualsException;
 import com.minionz.backend.common.exception.NotFoundException;
 import com.minionz.backend.user.controller.dto.*;
 import com.minionz.backend.user.domain.User;
+import com.minionz.backend.user.domain.UserBaseEntity;
 import com.minionz.backend.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +28,7 @@ public class UserService {
     private static final String USER_DUPLICATION_MESSAGE = "해당 유저 이메일이 중복입니다.";
     private static final String USER_age_DUPLICATION_MESSAGE = "해당 유저 닉네임이 중복입니다.";
     private static final String SHOP_NOT_FOUND_MESSAGE = "해당 매장이 존재하지 않습니다.";
+    private static final String MY_PAGE_CHANGE_SUCCESS = "해당 유저 회원정보 수정 성공입니다";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -88,5 +90,18 @@ public class UserService {
         if (userRepository.existsByage(age)) {
             throw new BadRequestException(USER_age_DUPLICATION_MESSAGE);
         }
+    }
+
+    public Message change(Long id,UserChangeRequestDto userChangeRequestDto) {
+        User changeUser = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_MESSAGE));
+        changeUser.setName(userChangeRequestDto.getName());
+        changeUser.setHeight(userChangeRequestDto.getHeight());
+        changeUser.setWeight(userChangeRequestDto.getWeight());
+        changeUser.setGender(userChangeRequestDto.getGender());
+        changeUser.setAge(userChangeRequestDto.getAge());
+        userRepository.save(changeUser);
+        return new Message(MY_PAGE_CHANGE_SUCCESS);
+
     }
 }

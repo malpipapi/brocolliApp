@@ -16,9 +16,6 @@ import java.util.List;
 @Entity
 public class FoodList extends BaseEntity {
 
-//    @OneToMany(mappedBy = "foodlist", cascade = CascadeType.ALL)
-//    private List<Food> foodArrayList = new ArrayList<>();
-
     @Column
     private String foodListName;
 
